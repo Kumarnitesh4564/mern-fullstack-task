@@ -25,18 +25,23 @@ function ProductList() {
     setProducts(products.filter(p => p._id !== id));
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div style={{ textAlign: 'center' }}>Loading...</div>;
 
   return (
-    <div>
+    <div className="container">
       <h2>Products</h2>
-      {products.map(product => (
-        <div key={product._id}>
-            <Link to={`/product/${product._id}`}>
-                {product.name}
-            </Link> - ₹{product.price}
 
-            <button onClick={() => handleDelete(product._id)}>Delete</button>
+      {products.map(product => (
+        <div className="card" key={product._id}>
+          <span>
+            <Link to={`/product/${product._id}`}>
+              {product.name}
+            </Link> - ₹{product.price}
+          </span>
+
+          <button onClick={() => handleDelete(product._id)}>
+            Delete
+          </button>
         </div>
       ))}
     </div>
