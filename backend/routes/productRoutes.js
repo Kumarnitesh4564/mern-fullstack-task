@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-
+const { protect } = require('../middleware/auth');
 const productController = require('../controllers/productController');
 const { validateProduct } = require('../middleware/validateProduct');
 
-// CREATE
-router.post('/', validateProduct, productController.createProduct);
+// CREATE (Protected + Validated)
+router.post('/', protect, validateProduct, productController.createProduct);
 
 // GET ALL
 router.get('/', productController.getAllProducts);

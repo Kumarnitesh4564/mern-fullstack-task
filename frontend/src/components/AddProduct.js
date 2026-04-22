@@ -17,12 +17,19 @@ function AddProduct() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const payload = {
+      ...formData,
+      price: parseFloat(formData.price)
+    };
+
     try {
-      await createProduct(formData);
+      await createProduct(payload);
       alert("Product Added!");
       setFormData({ name: '', price: '' });
     } catch (error) {
-      console.error("Error:", error);
+      const message = error.response?.data?.errors?.map(err => err.msg).join(', ') || error.response?.data?.error || error.message;
+      console.error("Create product error:", error.response || error);
+      alert(`Failed to add product: ${message}`);
     }
   };
 
