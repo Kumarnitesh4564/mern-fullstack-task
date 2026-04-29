@@ -4,7 +4,7 @@ const API = axios.create({
   baseURL: 'http://localhost:3000/api',
 });
 
-// TOKEN FIX
+// ✅ Attach token to EVERY request
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
 
@@ -15,15 +15,22 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
+// AUTH
 export const loginUser = (data) => API.post('/auth/login', data);
 export const registerUser = (data) => API.post('/auth/register', data);
 
+// PRODUCTS
 export const fetchProducts = () => API.get('/products');
 
 export const createProduct = (data) =>
   API.post('/products', data, {
-    headers: { 'Content-Type': 'multipart/form-data' }
+    headers: { 'Content-Type': 'multipart/form-data' },
   });
 
+// 🔥 FORCE TOKEN (THIS FIXES YOUR ISSUE)
 export const deleteProduct = (id) =>
-  API.delete(`/products/${id}`);
+  API.delete(`/products/${id}`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
+  });

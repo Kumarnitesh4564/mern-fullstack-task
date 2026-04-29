@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { createProduct } from '../services/api';
+import '../App.css';
 
 function AddProduct() {
   const [name, setName] = useState('');
@@ -17,6 +18,12 @@ function AddProduct() {
     try {
       await createProduct(formData);
       alert("Product Added ✅");
+
+      // reset form
+      setName('');
+      setPrice('');
+      setImage(null);
+
     } catch (err) {
       console.error(err.response?.data);
       alert("Error adding product ❌");
@@ -24,15 +31,34 @@ function AddProduct() {
   };
 
   return (
-    <div>
-      <h2>Add Product</h2>
+    <div className="container">
+      <h2 className="title">Add Product</h2>
 
-      <form onSubmit={handleSubmit}>
-        <input onChange={(e) => setName(e.target.value)} placeholder="Name" />
-        <input onChange={(e) => setPrice(e.target.value)} placeholder="Price" />
-        <input type="file" onChange={(e) => setImage(e.target.files[0])} />
+      <form className="card form" onSubmit={handleSubmit}>
+        
+        <input
+          type="text"
+          placeholder="Product Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+        />
 
-        <button>Add</button>
+        <input
+          type="number"
+          placeholder="Price"
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+          required
+        />
+
+        <input
+          type="file"
+          onChange={(e) => setImage(e.target.files[0])}
+        />
+
+        <button type="submit">Add Product</button>
+
       </form>
     </div>
   );

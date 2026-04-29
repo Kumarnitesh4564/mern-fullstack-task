@@ -5,11 +5,11 @@ function Navbar() {
   const { token, logout } = useAuth();
 
   return (
-    <nav style={{ marginBottom: "20px" }}>
+    <nav style={{ textAlign: "center", marginBottom: "20px" }}>
       <Link to="/">Home</Link> |{" "}
       <Link to="/add">Add Product</Link> |{" "}
 
-      {/* ✅ If NOT logged in */}
+      {}
       {!token ? (
         <>
           <Link to="/login">Login</Link> |{" "}

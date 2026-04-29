@@ -1,24 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { fetchProducts, deleteProduct } from '../services/api';
+import React, { useEffect, useState } from "react";
+import { fetchProducts, deleteProduct } from "../services/api";
 
 function ProductList() {
   const [products, setProducts] = useState([]);
 
+  const loadProducts = async () => {
+    const res = await fetchProducts();
+    setProducts(res.data);
+  };
+
   useEffect(() => {
     loadProducts();
   }, []);
-
-  const loadProducts = async () => {
-    try {
-      const res = await fetchProducts();
-
-      // ✅ FIX: backend returns array directly
-      setProducts(res.data || []);
-    } catch (err) {
-      console.error(err);
-      setProducts([]); // prevent crash
-    }
-  };
 
   const handleDelete = async (id) => {
     await deleteProduct(id);
@@ -26,30 +19,30 @@ function ProductList() {
   };
 
   return (
-    <div>
-      <h2>Products</h2>
+    <div className="container">
+      <h2 className="title">Products</h2>
 
-      {products.length === 0 ? (
-        <p>No products found</p>
-      ) : (
-        products.map((p) => (
-          <div key={p._id}>
-            <h3>{p.name}</h3>
-            <p>₹{p.price}</p>
-
-            {/* ✅ Image */}
+      <div className="grid">
+        {products.map((p) => (
+          <div className="card" key={p._id}>
+            
             {p.image && (
               <img
                 src={`http://localhost:3000/uploads/${p.image}`}
-                width="100"
-                alt=""
+                alt={p.name}
+                className="image"
               />
             )}
 
-            <button onClick={() => handleDelete(p._id)}>Delete</button>
+            <h3>{p.name}</h3>
+            <p className="price">₹{p.price}</p>
+
+            <button onClick={() => handleDelete(p._id)}>
+              Delete
+            </button>
           </div>
-        ))
-      )}
+        ))}
+      </div>
     </div>
   );
 }
