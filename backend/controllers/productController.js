@@ -1,14 +1,8 @@
 const Product = require('../models/Product');
 
-// ================= CREATE =================
 exports.createProduct = async (req, res) => {
   try {
     const { name, price } = req.body;
-
-    // Validation
-    if (!name || !price) {
-      return res.status(400).json({ error: "Name and price are required" });
-    }
 
     const product = await Product.create({
       name,
@@ -17,37 +11,53 @@ exports.createProduct = async (req, res) => {
     });
 
     res.status(201).json(product);
-
   } catch (err) {
-    console.error("CREATE PRODUCT ERROR:", err);
-    res.status(500).json({ error: err.message });
+    res.status(400).json({ error: err.message });
   }
 };
 
-// ================= GET ALL =================
 exports.getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find();
+    const { keyword } = req.query;
+
+    let query = {};
+
+    if (keyword) {
+      query.name = { $regex: keyword, $options: 'i' };
+    }
+
+    const products = await Product.find(query);
     res.json(products);
   } catch (err) {
-    console.error("GET PRODUCTS ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 };
 
-// ================= DELETE =================
+exports.updateProduct = async (req, res) => {
+  try {
+    const { name, price } = req.body;
+
+    const updated = await Product.findByIdAndUpdate(
+      req.params.id,
+      {
+        name,
+        price,
+        ...(req.file && { image: req.file.filename })
+      },
+      { new: true }
+    );
+
+    res.json(updated);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
 exports.deleteProduct = async (req, res) => {
   try {
-    const product = await Product.findByIdAndDelete(req.params.id);
-
-    if (!product) {
-      return res.status(404).json({ error: "Product not found" });
-    }
-
-    res.json({ message: "Deleted successfully" });
-
+    await Product.findByIdAndDelete(req.params.id);
+    res.json({ message: "Deleted" });
   } catch (err) {
-    console.error("DELETE PRODUCT ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 };
