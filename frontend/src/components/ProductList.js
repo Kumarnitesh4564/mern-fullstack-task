@@ -1,49 +1,55 @@
 import React, { useState, useEffect } from 'react';
 import { fetchProducts, deleteProduct } from '../services/api';
-import { Link } from 'react-router-dom';
 
 function ProductList() {
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        const { data } = await fetchProducts();
-        setProducts(data);
-      } catch (error) {
-        console.error("Error:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadData();
+    loadProducts();
   }, []);
+
+  const loadProducts = async () => {
+    try {
+      const res = await fetchProducts();
+
+      // ✅ FIX: backend returns array directly
+      setProducts(res.data || []);
+    } catch (err) {
+      console.error(err);
+      setProducts([]); // prevent crash
+    }
+  };
 
   const handleDelete = async (id) => {
     await deleteProduct(id);
-    setProducts(products.filter(p => p._id !== id));
+    loadProducts();
   };
 
-  if (loading) return <div style={{ textAlign: 'center' }}>Loading...</div>;
-
   return (
-    <div className="container">
+    <div>
       <h2>Products</h2>
 
-      {products.map(product => (
-        <div className="card" key={product._id}>
-          <span>
-            <Link to={`/product/${product._id}`}>
-              {product.name}
-            </Link> - ₹{product.price}
-          </span>
+      {products.length === 0 ? (
+        <p>No products found</p>
+      ) : (
+        products.map((p) => (
+          <div key={p._id}>
+            <h3>{p.name}</h3>
+            <p>₹{p.price}</p>
 
-          <button onClick={() => handleDelete(product._id)}>
-            Delete
-          </button>
-        </div>
-      ))}
+            {/* ✅ Image */}
+            {p.image && (
+              <img
+                src={`http://localhost:3000/uploads/${p.image}`}
+                width="100"
+                alt=""
+              />
+            )}
+
+            <button onClick={() => handleDelete(p._id)}>Delete</button>
+          </div>
+        ))
+      )}
     </div>
   );
 }

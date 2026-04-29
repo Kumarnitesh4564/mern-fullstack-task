@@ -4,28 +4,20 @@ import { registerUser } from '../services/api';
 function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setLoading(true);
 
     try {
-      const response = await registerUser({ email, password });
-      localStorage.setItem('token', response.data.token);
-      alert("Registration Successful! Now login.");
-      setEmail('');
-      setPassword('');
-      window.location.href = '/login';
+      const res = await registerUser({ email, password });
+
+      console.log("REGISTER SUCCESS:", res.data);
+      alert("Registration Successful ✅");
+
     } catch (error) {
-        console.error("FULL ERROR:", error.response || error);
-        const errorMsg = error.response?.data?.error || error.response?.data?.message || "Registration Failed";
-        setError(errorMsg);
-        alert(errorMsg);
-    } finally {
-      setLoading(false);
+      console.error("REGISTER ERROR:", error.response?.data || error.message);
+
+      alert(error.response?.data?.error || "Registration Failed ❌");
     }
   };
 
@@ -37,7 +29,6 @@ function Register() {
         <input
           type="email"
           placeholder="Enter Email"
-          value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
@@ -45,7 +36,6 @@ function Register() {
         <input
           type="password"
           placeholder="Enter Password"
-          value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />

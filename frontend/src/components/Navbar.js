@@ -5,26 +5,22 @@ function Navbar() {
   const { token, logout } = useAuth();
 
   return (
-    <nav
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        gap: '20px',
-        padding: '15px',
-        backgroundColor: '#ffffff',
-        boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
-      }}
-    >
-      <Link to="/">Home</Link>
-      <Link to="/add">Add Product</Link>
+    <nav style={{ marginBottom: "20px" }}>
+      <Link to="/">Home</Link> |{" "}
+      <Link to="/add">Add Product</Link> |{" "}
 
-      {token ? (
-        <button onClick={logout}>Logout</button>
+      {/* ✅ If NOT logged in */}
+      {!token ? (
+        <>
+          <Link to="/login">Login</Link> |{" "}
+          <Link to="/register">Register</Link>
+        </>
       ) : (
         <>
-          <Link to="/login">Login</Link>
-          <Link to="/register">Register</Link>
+          {/* ✅ If logged in */}
+          <button onClick={logout} style={{ marginLeft: "10px" }}>
+            Logout
+          </button>
         </>
       )}
     </nav>

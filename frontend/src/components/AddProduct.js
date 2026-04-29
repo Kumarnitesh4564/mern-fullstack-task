@@ -1,62 +1,38 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { createProduct } from '../services/api';
 
 function AddProduct() {
-  const [formData, setFormData] = useState({
-    name: '',
-    price: ''
-  });
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
+  const [name, setName] = useState('');
+  const [price, setPrice] = useState('');
+  const [image, setImage] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const payload = {
-      ...formData,
-      price: parseFloat(formData.price)
-    };
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('price', price);
+    formData.append('image', image);
 
     try {
-      await createProduct(payload);
-      alert("Product Added!");
-      setFormData({ name: '', price: '' });
-    } catch (error) {
-      const message = error.response?.data?.errors?.map(err => err.msg).join(', ') || error.response?.data?.error || error.message;
-      console.error("Create product error:", error.response || error);
-      alert(`Failed to add product: ${message}`);
+      await createProduct(formData);
+      alert("Product Added ✅");
+    } catch (err) {
+      console.error(err.response?.data);
+      alert("Error adding product ❌");
     }
   };
 
   return (
-    <div className="container">
+    <div>
       <h2>Add Product</h2>
 
       <form onSubmit={handleSubmit}>
-        <input
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          placeholder="Product Name"
-          required
-        />
+        <input onChange={(e) => setName(e.target.value)} placeholder="Name" />
+        <input onChange={(e) => setPrice(e.target.value)} placeholder="Price" />
+        <input type="file" onChange={(e) => setImage(e.target.files[0])} />
 
-        <input
-          name="price"
-          type="number"
-          value={formData.price}
-          onChange={handleChange}
-          placeholder="Price"
-          required
-        />
-
-        <br />
-        <button type="submit">Add Product</button>
+        <button>Add</button>
       </form>
     </div>
   );
